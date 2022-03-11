@@ -63,6 +63,33 @@ export const D2rUnitAnyPlayerStrut = bp.object('D2rUnitAnyPlayer', {
   unk5: bp.array('Unk5', new Pointer(bp.lu32), 25),
 
   nextUnit: bp.lu64, // 0x158
+  // unk6: bp.skip(0x1F8),
+  // unk6: bp.skip(0x1F8-0x158),
+  // levelNo: bp.u8
+});
+
+export const D2cRoom2 = bp.object('D2cRoom2', {
+  skip1: bp.skip(0x34),
+  x: bp.lu32,
+  y: bp.lu32,
+  width: bp.lu32,
+  height: bp.lu32,
+});
+
+export const D2cRoom1 = bp.object('D2cRoom1', {
+  pRoomNear: new Pointer(bp.lu32), // 0x00
+  skip1: bp.skip(3 * 4), // 0x04
+  pRoom2: new Pointer(D2cRoom2), // 0x10
+  skip2: bp.skip(0x24 - (0x10 + 4)),
+  roomCount: bp.lu32,
+  skip3: bp.skip(0x4c - 0x28),
+  x: bp.lu32, //0x4c
+  y: bp.lu32,
+  width: bp.lu32,
+  height: bp.lu32,
+
+  skip4: bp.skip(6 * 4),
+  pUnit: new Pointer(bp.lu32),
 });
 
 export const D2rStrut = {
@@ -73,4 +100,6 @@ export const D2rStrut = {
   Act: D2rActStrut,
   ActMisc: D2rActMisc,
   Path: D2PathStrut,
+  Room1: D2cRoom1,
+  Room2: D2cRoom2,
 };

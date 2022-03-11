@@ -2,6 +2,7 @@ import { toHex } from '@diablo2/data';
 import { promises as fs } from 'fs';
 import { FileHandle } from 'fs/promises';
 import { MemoizeExpiring } from 'typescript-memoize';
+import {ScannerBuffer} from "./scanner.js";
 
 export interface ProcessMemoryMap {
   start: number;
@@ -126,6 +127,21 @@ export class Process {
     });
 
     for (const map of maps) {
+      // const buffer = await this.read(map.start, map.end - map.start);
+      // let xx11 = ScannerBuffer.text(buffer, 'Ishani', 16)
+      // let xx11val = xx11.next().value;
+      // if(xx11val > 0) {
+      //   console.log("####", map.line, xx11val);
+      //
+      //   try {
+      //     const buffer = await this.read(map.start, map.end - map.start);
+      //     yield { buffer, offset: map.start, map: map };
+      //   } catch (err) {
+      //     // console.trace({ err, offset }, 'Scan:Distance');
+      //     break;
+      //   }
+      // }
+
       if (f != null && f(map) === false) continue;
 
       try {

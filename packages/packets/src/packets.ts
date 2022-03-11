@@ -9,6 +9,8 @@ export function getDiabloPackets(version: Diablo2Version): Diablo2Packets {
       return PacketsPod;
     case Diablo2Version.ProjectDiablo2:
       return PacketsPd2;
+    case Diablo2Version.Resurrected:
+      return PacketsPod;
     default:
       throw new Error(`Unable to load packets for version: ${version}`);
   }

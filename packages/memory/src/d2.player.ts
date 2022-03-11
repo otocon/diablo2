@@ -4,6 +4,7 @@ import { Pointer } from './index.js';
 import { LogType } from './logger.js';
 import { UnitPlayer } from './structures.js';
 import { ActS, PathS } from './struts/common.js';
+import { bp } from 'binparse';
 
 export class Diablo2Player {
   d2: Diablo2Process;

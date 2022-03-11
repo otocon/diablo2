@@ -12,6 +12,7 @@ export enum Diablo2Version {
 export function getDiabloVersion(gamePath: string): Diablo2Version {
   const lowerPath = gamePath.toLowerCase();
   if (lowerPath.includes('projectd2')) return Diablo2Version.ProjectDiablo2;
+  if (lowerPath.includes('resurrected')) return Diablo2Version.Resurrected;
   if (lowerPath.includes('path of diablo')) return Diablo2Version.PathOfDiablo;
   throw new Error(`Unknown game version : ${gamePath}`);
 }

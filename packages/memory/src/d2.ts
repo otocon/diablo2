@@ -1,14 +1,14 @@
-import { Diablo2Version } from '@diablo2/data';
-import { bp, StrutAny, StrutInfer, toHex } from 'binparse';
+import {Diablo2Version} from '@diablo2/data';
+import {bp, StrutAny, StrutInfer, toHex} from 'binparse';
 import 'source-map-support/register.js';
-import { Diablo2Player } from './d2.player.js';
-import { LogType } from './logger.js';
-import { Process } from './process.js';
-import { ScannerBuffer } from './scanner.js';
-import { D2cStrut } from './struts/d2c.js';
-import { D2rStrut } from './struts/d2r.js';
-import { Pointer } from './struts/pointer.js';
-import { dump } from './util/dump.js';
+import {Diablo2Player} from './d2.player.js';
+import {LogType} from './logger.js';
+import {Process} from './process.js';
+import {ScannerBuffer} from './scanner.js';
+import {D2cStrut} from './struts/d2c.js';
+import {D2rStrut} from './struts/d2r.js';
+import {Pointer} from './struts/pointer.js';
+import {dump} from './util/dump.js';
 
 export class Diablo2Process {
   version: Diablo2Version;
@@ -49,7 +49,7 @@ export class Diablo2Process {
     return new Diablo2Process(new Process(pid), version);
   }
 
-  async scanForPlayer(playerName: string, logger: LogType): Promise<Diablo2Player | null> {
+  async scanForPlayer(playerName: string, logger: LogType, blacklistMems: Map<string, boolean>): Promise<Diablo2Player | null> {
     const struts = this.strut;
     if (this.lastGoodAddress.name > 0) {
       logger.info({ lastGoodAddress: this.lastGoodAddress }, 'Offsets:Previous');
@@ -72,7 +72,7 @@ export class Diablo2Process {
         if (!strut.wpNightmare.isValid) continue;
         if (!strut.wpHell.isValid) continue;
 
-        logger.info({ offset: toHex(playerNameOffset) }, 'Player:Offset');
+        logger.info({ offset: toHex(playerNameOffset) }, 'Player:Offset1');
 
         const lastPlayer = this.lastGoodAddress.player;
         for await (const p of this.process.scanDistance(
@@ -80,7 +80,7 @@ export class Diablo2Process {
           (f) => lastPlayer === 0 || Math.abs(f.start - lastPlayer) < 0x0f_ff_ff_ff,
         )) {
           for (const off of ScannerBuffer.pointer(p.buffer, playerNameOffset)) {
-            const verOffset = this.version === Diablo2Version.Classic ? 20 : 16;
+            const verOffset = this.version === (Diablo2Version.Classic || Diablo2Version.Resurrected) ? 20 : 16;
             const playerRelStrutOffset = off - verOffset;
             const playerStrutOffset = playerRelStrutOffset + p.map.start;
 
@@ -96,7 +96,7 @@ export class Diablo2Process {
 
             if (Pointer.isPointersValid(unit) === 0) continue;
             logger.info(
-              { offset: toHex(playerNameOffset), unit: toHex(playerStrutOffset) },
+              { offset: toHex(playerNameOffset), unit: toHex(playerStrutOffset), line: mem.map.line },
               'Player:Offset:Pointer:Found',
             );
 
@@ -109,7 +109,8 @@ export class Diablo2Process {
       }
     }
 
-    logger.warn({ playerName }, 'Player:NotFound');
-    process.exit();
+    logger.warn({ playerName }, 'Player:NotFound2, should exit but nah!');
+    // process.exit();
+    return null;
   }
 }

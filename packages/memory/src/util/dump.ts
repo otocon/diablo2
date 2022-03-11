@@ -30,7 +30,7 @@ export function toHexColor(num: number): string {
 const NonStringChar = c.gray('.');
 const DumpSize = 16;
 
-/** Dump a buffer into a human readable(ish) output */
+/** Dump a buffer into a humDiablo2Processan readable(ish) output */
 export function dump(buf: Buffer, title = ''): void {
   let offset = 0;
 

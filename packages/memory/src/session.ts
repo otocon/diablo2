@@ -10,24 +10,27 @@ export class Diablo2GameSessionMemory {
   state: Diablo2State;
   d2: Diablo2Process;
   playerName: string;
+  clientSockets: Map<string, any>;
 
   player: Diablo2Player | null;
   /** Delay to wait between ticks */
   tickSpeed = 250;
 
-  constructor(proc: Diablo2Process, playerName: string) {
+  constructor(proc: Diablo2Process, playerName: string, clientSockets: Map<string, any>) {
     this.d2 = proc;
     this.playerName = playerName;
+    this.clientSockets = clientSockets;
     this.state = new Diablo2State(id, Log);
   }
 
   async start(logger: LogType): Promise<void> {
     logger.info({ pid: this.d2.process.pid }, 'Session:Start');
+    let blacklistMems = new Map<string, boolean>();
 
     let errorCount = 0;
     while (true) {
       try {
-        const player = await this.waitForPlayer(logger);
+        const player = await this.waitForPlayer(logger, blacklistMems);
         if (player == null) continue;
 
         await this.updateState(player, logger);
@@ -42,7 +45,7 @@ export class Diablo2GameSessionMemory {
     }
   }
 
-  async waitForPlayer(logger: LogType): Promise<Diablo2Player> {
+  async waitForPlayer(logger: LogType, blacklistMems: Map<string, boolean>): Promise<Diablo2Player> {
     if (this.player) {
       const player = await this.player.validate(logger);
       if (player != null) return this.player;
@@ -52,10 +55,10 @@ export class Diablo2GameSessionMemory {
     while (true) {
       logger.info({ pid: this.d2.process.pid }, 'Session:WaitForPlayer');
 
-      await sleep(Math.min(backOff * 500, 5_000));
+      await sleep(500);
       backOff++;
 
-      this.player = await this.d2.scanForPlayer(this.playerName, logger);
+      this.player = await this.d2.scanForPlayer(this.playerName, logger, blacklistMems);
       if (this.player == null) continue;
       return this.player;
     }
@@ -75,7 +78,10 @@ export class Diablo2GameSessionMemory {
     if (act.mapSeed !== this.state.map.id) {
       this.state.map.id = act.mapSeed;
       this.state.map.difficulty = await obj.getDifficulty(act, logger);
-      this.state.log.info({ map: this.state.map }, 'MapSeed:Changed');
+      this.state.log.info({ map: this.state.map }, 'MapSeed:Changed1');
+      for(let socket of this.clientSockets.values()){
+        socket.emit("mapSeed", this.state.map.id);
+      }
     }
 
     // Track player location
