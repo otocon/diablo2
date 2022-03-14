@@ -48,8 +48,11 @@ async function main(): Promise<void> {
 
   io.on('connection', (socket) => {
     console.log('a user connected');
-    if (session.state.map.id !== null) {
+    if (session.state.map.id !== -1) {
       socket.emit("mapSeed", session.state.map.id);
+    }
+    if (session.state.level.number !== -1) {
+      socket.emit("levelNo", session.state.level.number);
     }
     clientSockets.set(socket.id, socket);
     socket.on('disconnect', () => {

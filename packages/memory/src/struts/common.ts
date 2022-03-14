@@ -17,11 +17,28 @@ export const D2StatListStrut = bp.object('D2StatListStrut', {
 });
 export type StatListS = StrutInfer<typeof D2StatListStrut>;
 
+export const D2rLevel = bp.object('D2rLevel', {
+  unk1: bp.skip(0x1F8),
+  levelNo: bp.u8
+});
+
+export const D2rRoom2 = bp.object('D2rRoom2', {
+  unk1: bp.skip(0x90),
+  pLevel: new Pointer(D2rLevel)
+});
+
+export const D2rRoom1 = bp.object('D2rRoom1', {
+  unk1: bp.skip(0x18),
+  pRoom2: new Pointer(D2rRoom2)
+});
+
 export const D2PathStrut = bp.object('Path', {
   xOffset: bp.lu16,
   x: bp.lu16,
   yOffset: bp.lu16,
   y: bp.lu16,
+  unk1: bp.skip(0x20 - (bp.lu16.size * 4)),
+  pRoom1: new Pointer(D2rRoom1)
 });
 export type PathS = StrutInfer<typeof D2PathStrut>;
 

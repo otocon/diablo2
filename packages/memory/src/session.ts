@@ -1,8 +1,8 @@
-import { Diablo2State } from '@diablo2/core';
-import { Attribute } from '@diablo2/data';
-import { Diablo2Process } from './d2.js';
-import { Diablo2Player } from './d2.player.js';
-import { id, Log, LogType } from './logger.js';
+import {Diablo2State} from '@diablo2/core';
+import {Attribute} from '@diablo2/data';
+import {Diablo2Process} from './d2.js';
+import {Diablo2Player} from './d2.player.js';
+import {id, Log, LogType} from './logger.js';
 
 const sleep = (dur: number): Promise<void> => new Promise((r) => setTimeout(r, dur));
 
@@ -72,15 +72,24 @@ export class Diablo2GameSessionMemory {
 
     const path = await obj.getPath(player, logger);
     const act = await obj.getAct(player, logger);
+    const levelNo = await obj.getLevel(path, logger);
     this.state.map.act = player.actId;
 
     // Track map information
     if (act.mapSeed !== this.state.map.id) {
       this.state.map.id = act.mapSeed;
       this.state.map.difficulty = await obj.getDifficulty(act, logger);
-      this.state.log.info({ map: this.state.map }, 'MapSeed:Changed1');
-      for(let socket of this.clientSockets.values()){
+      this.state.log.info({map: this.state.map}, 'MapSeed:Changed');
+      for (let socket of this.clientSockets.values()) {
         socket.emit("mapSeed", this.state.map.id);
+      }
+    }
+
+    if (levelNo !== this.state.level.number) {
+      this.state.level.number = levelNo;
+      this.state.log.info({levelNo: this.state.level.number}, 'Level:Changed');
+      for (let socket of this.clientSockets.values()) {
+        socket.emit("levelNo", this.state.level.number);
       }
     }
 

@@ -3,7 +3,7 @@ import { Diablo2Process } from './d2.js';
 import { Pointer } from './index.js';
 import { LogType } from './logger.js';
 import { UnitPlayer } from './structures.js';
-import { ActS, PathS } from './struts/common.js';
+import {ActS, PathS } from './struts/common.js';
 import { bp } from 'binparse';
 
 export class Diablo2Player {
@@ -71,4 +71,18 @@ export class Diablo2Player {
     const actMisc = await this.d2.readStrutAt(act.pActMisc.offset, this.d2.strut.ActMisc);
     return actMisc.difficulty;
   }
+
+  async getLevel(path: PathS, logger: LogType): Promise<number> {
+    if (!path.pRoom1.isValid) logger.error({ offset: toHex(path.pRoom1.offset) }, 'Player:OffsetInvalid:Room1');
+    const room1 = await this.d2.readStrutAt(path.pRoom1.offset, this.d2.strut.Room1);
+
+    if(!room1.pRoom2.isValid) logger.error({ offset: toHex(room1.pRoom2.offset) }, 'Player:OffsetInvalid:Room2');
+    const room2 = await this.d2.readStrutAt(room1.pRoom2.offset, this.d2.strut.Room2);
+
+    if(!room2.pLevel.isValid) logger.error({ offset: toHex(room2.pLevel.offset) }, 'Player:OffsetInvalid:Level');
+    const level = await this.d2.readStrutAt(room2.pLevel.offset, this.d2.strut.Level);
+
+    return level.levelNo;
+  }
+
 }

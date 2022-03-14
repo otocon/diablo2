@@ -59,6 +59,10 @@ export interface Diablo2MapJson {
   isHardcore: boolean;
 }
 
+export interface Diablo2LevelJson {
+  number: number;
+}
+
 export interface Diablo2XpStateJson {
   start: number;
   current: number;

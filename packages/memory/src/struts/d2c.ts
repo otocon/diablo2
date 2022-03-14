@@ -20,12 +20,18 @@ export const D2cActMisc = bp.object('D2cActMisc', {
   pAct: bp.lu32,
 });
 
+export const D2cLevel = bp.object('D2cLevel', {
+  skip: bp.skip(2), //FIXME: definitely wrong, just to skip compilation issues
+  levelNo: bp.u8, //FIXME: definitely wrong, just to skip compilation issues
+});
+
 export const D2cRoom2 = bp.object('D2cRoom2', {
   skip1: bp.skip(0x34),
   x: bp.lu32,
   y: bp.lu32,
   width: bp.lu32,
   height: bp.lu32,
+  pLevel: new Pointer(D2cLevel), //FIXME: definitely wrong, just to skip compilation issues
 });
 
 export const D2cRoom1 = bp.object('D2cRoom1', {
@@ -111,4 +117,5 @@ export const D2cStrut = {
   Path: D2PathStrut,
   Room1: D2cRoom1,
   Room2: D2cRoom2,
+  Level: D2cLevel
 };

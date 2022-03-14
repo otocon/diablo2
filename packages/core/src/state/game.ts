@@ -20,6 +20,8 @@ export class Diablo2State {
 
   map: GameJson.Diablo2MapJson = { id: -1, act: -1, difficulty: -1, isHardcore: false };
 
+  level: GameJson.Diablo2LevelJson = { number: -1 };
+
   kills: Map<number, GameJson.Diablo2KillJson> = new Map();
 
   onChange?: () => void;
